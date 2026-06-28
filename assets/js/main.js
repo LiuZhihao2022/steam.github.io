@@ -440,12 +440,12 @@
   const DATA = {
     order: ["BC", "STEAM (Exp)", "STEAM (Exp+Dagg)", "STEAM (Full)"],
     colors: { BC: "#cabfb1", "STEAM (Exp)": "#fdba74", "STEAM (Exp+Dagg)": "#fb8c3c", "STEAM (Full)": "#ea580c" },
-    succ: { BC: [33.3, 39.5, 63.8, 52], "STEAM (Exp)": [69.2, 36.4, 55.0, 61.5], "STEAM (Exp+Dagg)": [81.8, 80.0, null, null], "STEAM (Full)": [92.3, 93.8, 80.0, 75.0] },
+    succ: { BC: [33.3, 39.5, 63.8, 52], "STEAM (Exp)": [69.2, 36.4, 55.0, 61.5], "STEAM (Exp+Dagg)": [81.8, 80.0, null, 66.7], "STEAM (Full)": [92.3, 93.8, 80.0, 75.0] },
   };
   const METRIC_LABEL = { succ: "Success Rate (%)", score: "Score (sub-stages)", thr: "Throughput (ep/hour)" };
   const NOTE = {
     method: "Policy performance across four real-world tasks (Table 1). HG-DAgger is not run on pick-and-place, where BC already does reasonably well.",
-    data: "Success rate as training data grows: expert only → + human corrections → + autonomous rollouts (Fig. 6). The DAgger stage applies to towel folding & chip checkout only.",
+    data: "Success rate as training data grows: expert only → + human corrections → + autonomous rollouts (Fig. 6). The DAgger stage applies to towel folding, chip checkout & cola restocking (not pick-and-place).",
   };
 
   const canvas = $("#resultChart"), ctx = canvas.getContext("2d");
