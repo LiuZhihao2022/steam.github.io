@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>STEAM — Self-Supervised Temporal Ensemble Advantage Modeling</title>
+<meta name="description" content="STEAM: a label-free, self-supervised method that learns frame-level advantages from the temporal order of expert demonstrations, improving real-world robot manipulation policies." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV" crossorigin="anonymous" />
+<script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" integrity="sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="assets/css/style.css?v=28" />
+</head>
+<body>
+
+<!-- ============================ NAV ============================ -->
+<header class="topbar" id="topbar">
+  <div class="bar-inner">
+    <a class="brand" href="#top" aria-label="STEAM home">
+      <img class="brand-logo" src="assets/steam_icon.png" alt="" />
+      <span>STEAM</span>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <a href="#overview">Overview</a>
+      <a href="#method">Method</a>
+      <a href="#advantage">Advantage Visualization</a>
+      <a href="#demos">Comparison</a>
+      <a href="#results">Results</a>
+      <a href="#paper">Paper</a>
+    </nav>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- ============================ HERO ============================ -->
+<section class="hero" id="top">
+  <video class="hero-video" id="heroVideo" autoplay muted loop playsinline preload="auto" poster="assets/poster/teaser.jpg">
+    <source src="assets/video/teaser.mp4" type="video/mp4" />
+  </video>
+  <div class="hero-scrim"></div>
+
+  <div class="hero-inner">
+    <p class="eyebrow light">Real-World Robot Learning</p>
+    <h1 class="hero-h1"><span class="hm-mark">STEAM</span><span class="hm-colon">:</span> <span class="hm-rest">Self-Supervised Temporal Ensemble Advantage Modeling for Real-World Robot Learning</span></h1>
+    <p class="hero-title">A label-free advantage model that reads <em>progress, stalls, failures, and recoveries</em> frame&#8209;by&#8209;frame — learned from nothing but the temporal order of expert demos.</p>
+
+    <p class="authors">
+      <span>Zhihao&nbsp;Liu<sup>1,4,5,&#42;</sup></span>
+      <span>Qiuyi&nbsp;Gu<sup>2,3,6,&#42;</sup></span>
+      <span>Yitao&nbsp;Wang<sup>2</sup></span>
+      <span>Dongming&nbsp;Qiao<sup>2</sup></span>
+      <span>Yixian&nbsp;Zhang<sup>2</sup></span>
+      <span>Shuaihang&nbsp;Chen<sup>7,5</sup></span>
+      <span>Liangzhi&nbsp;Shi<sup>2</sup></span>
+      <span>Tianxing&nbsp;Zhou<sup>8,5</sup></span>
+      <span>Zefang&nbsp;Huang<sup>9,5</sup></span>
+      <span>Kang&nbsp;Chen<sup>10,5</sup></span>
+      <span>Zhen&nbsp;Guo<sup>11</sup></span>
+      <span>Quanlu&nbsp;Zhang<sup>11</sup></span>
+      <span>Jincheng&nbsp;Yu<sup>2</sup></span>
+      <span>Xiaodan&nbsp;Liang<sup>6</sup></span>
+      <span>Guoliang&nbsp;Fan<sup>1</sup></span>
+      <span>Yu&nbsp;Wang<sup>2</sup></span>
+      <span>Feng&nbsp;Gao<sup>2,3</sup></span>
+      <span>Xinlei&nbsp;Chen<sup>2,&dagger;</sup></span>
+      <span>Chao&nbsp;Yu<sup>2,&dagger;</sup></span>
+    </p>
+    <p class="affils">
+      <span><sup>1</sup>&nbsp;Institute of Automation, Chinese Academy of Sciences</span>
+      <span><sup>2</sup>&nbsp;Tsinghua University</span>
+      <span><sup>3</sup>&nbsp;Striding AI</span>
+      <span><sup>4</sup>&nbsp;School of Artificial Intelligence, University of Chinese Academy of Sciences</span>
+      <span><sup>5</sup>&nbsp;Zhongguancun Academy</span>
+      <span><sup>6</sup>&nbsp;Pengcheng Laboratory</span>
+      <span><sup>7</sup>&nbsp;Harbin Institute of Technology</span>
+      <span><sup>8</sup>&nbsp;Beijing Institute of Technology</span>
+      <span><sup>9</sup>&nbsp;Zhejiang University</span>
+      <span><sup>10</sup>&nbsp;Peking University</span>
+      <span><sup>11</sup>&nbsp;Infinigence AI</span>
+      <span class="legend">&#42;&nbsp;Equal contribution&nbsp;·&nbsp;&dagger;&nbsp;Corresponding author</span>
+    </p>
+
+    <div class="hero-links">
+      <a class="btn btn-disabled" href="#" aria-disabled="true" title="Link coming soon">
+        <span>arXiv</span><i class="soon">soon</i>
+      </a>
+      <a class="btn btn-disabled" href="#" aria-disabled="true" title="Link coming soon">
+        <span>Code</span><i class="soon">soon</i>
+      </a>
+    </div>
+  </div>
+
+  <a class="scroll-cue" href="#overview" aria-label="Scroll down">
+    <span>Scroll</span>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v14M6 13l6 6 6-6" /></svg>
+  </a>
+</section>
+
+<!-- ============================ OVERVIEW ============================ -->
+<section class="section" id="overview">
+  <div class="wrap">
+    <p class="eyebrow">At a glance</p>
+    <h2 class="section-title">Good and bad behavior live in the <span class="hl">same</span> trajectory.</h2>
+
+    <div class="task-tabs ov-tabs" role="tablist" aria-label="Trajectory type">
+      <button class="task-tab is-active" role="tab" data-ovtraj="expert">Expert</button>
+      <button class="task-tab" role="tab" data-ovtraj="rollout">Rollout</button>
+      <button class="task-tab" role="tab" data-ovtraj="human">Human correction</button>
+    </div>
+    <figure class="ov-fig reveal">
+      <svg id="ovDiagram" viewBox="0 0 1080 366" role="img" aria-label="STEAM turns heterogeneous, mixed-quality robot data — expert demos, rollouts, and human corrections, whose quality varies even within a single episode — into a frame-level good-versus-bad advantage signal that drives offline real-robot reinforcement learning."></svg>
+    </figure>
+
+    <div class="contrib-grid">
+      <article class="card">
+        <div class="card-mark"><svg viewBox="0 0 60 24" aria-hidden="true"><path d="M2 20 C12 20 16 6 24 6 S36 18 44 12 56 4 58 4"/></svg></div>
+        <h3>Label-free advantage</h3>
+        <p>Frame-level advantage estimated from expert temporal structure — normalized temporal offsets between frame pairs become dense self-supervised targets. No hand-crafted rewards or annotations.</p>
+      </article>
+      <article class="card">
+        <div class="card-mark"><svg viewBox="0 0 60 24" aria-hidden="true"><path d="M2 14 C12 6 18 6 28 12"/><path d="M2 18 C12 12 18 10 28 16"/><path d="M2 10 C12 2 18 4 28 9"/><path d="M28 12 C40 18 50 8 58 6" class="thick"/></svg></div>
+        <h3>Conservative ensemble</h3>
+        <p>An ensemble of distributional offset predictors, aggregated by the <em>minimum</em> advantage. Members agree in-distribution but diverge on OOD rollouts, so the min suppresses overestimated, false-positive advantages.</p>
+      </article>
+      <article class="card">
+        <div class="card-mark big">+59%</div>
+        <h3>Real-world gains</h3>
+        <p>On four real-robot tasks, paired with CFGRL, STEAM lifts success rate by <strong>+59%</strong>, <strong>+54.3%</strong>, <strong>+23%</strong>, and <strong>+16.2%</strong> — towel folding, chip checkout, cola restocking, and pick-and-place.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ METHOD ============================ -->
+<section class="section section-tint" id="method">
+  <div class="wrap">
+    <p class="eyebrow">How it works</p>
+    <h2 class="section-title">From temporal order to a refined policy.</h2>
+    <p class="lede">STEAM turns the order of expert frames into a progress signal, learns it with an ensemble, then uses it to score data and refine the policy.</p>
+
+    <figure class="method-fig reveal">
+      <img src="assets/img/method.png" alt="STEAM framework: (a) frame pairs from expert demos for normalized temporal offset, forward and reversed; (b) ensemble of M predictors mapping frame pairs and instructions to categorical distributions over temporal bins, converted to scalar advantages; (c) the trained ensemble scores mixed-quality data, guiding a VLA policy through CFGRL." loading="lazy" />
+      <figcaption><b>(a)</b> Frame pairs &rarr; normalized temporal offsets (forward &amp; reversed). <b>(b)</b> An ensemble of <em>M</em> predictors &rarr; categorical distributions &rarr; scalar advantages. <b>(c)</b> The ensemble scores mixed-quality data &rarr; CFGRL policy refinement.</figcaption>
+    </figure>
+
+    <ol class="steps">
+      <li class="step reveal">
+        <span class="step-no">01</span>
+        <h3>Label frame pairs</h3>
+        <p>Within an expert episode, the temporal offset of two frames is just <em>j&nbsp;&minus;&nbsp;i</em>. Forward pairs supervise progress; <strong>reversed</strong> pairs synthesize regression. Offsets are <strong>scaled by</strong> trajectory length, so efficient demos score higher.</p>
+        <div class="eq" data-tex="\tilde{\Delta}(i,j) = (j-i)\,\cdot\,\dfrac{L_{\max}}{L_{\tau}}"></div>
+      </li>
+      <li class="step reveal">
+        <span class="step-no">02</span>
+        <h3>Train the ensemble</h3>
+        <p>Each predictor maps a frame pair + instruction to a categorical distribution over <em>N</em> signed temporal bins (cross-entropy). The advantage is the expected bin minus the ground-truth offset — its <strong>sign</strong> tells progress from regression. <em>M</em> predictors, aggregated by the minimum.</p>
+        <div class="eq" data-tex="A_{\text{STEAM}}(f_i)=\min_{m}\,\dfrac{2}{N}\Big(\mathbb{E}_{b\sim p_{\theta_m}}[b]-\tilde{\Delta}^{\mathcal{B}}(i,i{+}H)\Big)"></div>
+      </li>
+      <li class="step reveal">
+        <span class="step-no">03</span>
+        <h3>Score, label and refine</h3>
+        <p>The trained ensemble scores <strong>every frame</strong> of mixed-quality data — expert demos, rollouts, and human corrections. A <strong>per-source quantile</strong> threshold turns scores into <strong>positive / negative</strong> optimality labels, which then condition a flow-matching <span class="mono">&pi;<sub>0</sub></span> policy through <strong>CFGRL</strong> — guiding sampling toward the positive, high-advantage behavior.</p>
+        <div class="eq-stack">
+          <div class="eq" data-tex="o_i = \mathbb{1}\!\left[\,A_{\text{STEAM}}(f_i)\ \ge\ \delta_q^{\text{src}}\,\right]"></div>
+          <div class="eq" data-tex="\hat{v}=v(\varnothing)+w\big(v(o{=}1)-v(\varnothing)\big)"></div>
+        </div>
+      </li>
+    </ol>
+
+    <figure class="binfig-wrap reveal">
+      <div class="binfig3" id="binfig">
+        <div class="pl-lanehead">
+          <span class="pl-step"><b>Step 1</b>Select a frame pair</span>
+          <span class="pl-step"><b>Step 2</b>Length-scale the offset &middot; &Delta; &rarr; &Delta;&#771;</span>
+        </div>
+
+        <div class="pl-lanes" id="plLanes"></div>
+
+        <div class="pl-predict"><span class="bf2-pill">predictor&nbsp;p<sub>&theta;</sub></span></div>
+        <svg class="pl-down pl-down-c" viewBox="0 0 14 30" aria-hidden="true"><path d="M7 0V23M2 17l5 6 5-6"/></svg>
+
+        <div class="pl-panel pl-single">
+          <span class="pl-plabel"><b>Step 3</b>Predict a distribution over temporal-offset bins</span>
+          <svg class="pl-chart" id="bfChart" viewBox="0 0 640 214" aria-hidden="true"></svg>
+          <p class="pl-legend"><span class="lg-bar"></span> predicted distribution &nbsp;·&nbsp; <span class="lg-tri">&#9660;</span> one-hot training target</p>
+        </div>
+      </div>
+      <figcaption class="pl-hint">Click a frame pair above to light up its Step 1 &rarr; 2 &rarr; 3.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ============================ ADVANTAGE VISUALIZATION ============================ -->
+<section class="section" id="advantage">
+  <div class="wrap">
+    <p class="eyebrow">The signal, frame by frame</p>
+    <h2 class="section-title">Watch the advantage <span class="hl">move</span>.</h2>
+    <p class="lede">
+      A good advantage stays high during proficient motion, dips on hesitation or failure, and recovers when progress resumes.
+      Below, STEAM's frame-level advantage is overlaid on four episode types — pick a task and watch each curve track exactly what the robot is doing.
+    </p>
+
+    <div class="task-tabs adv-task-tabs" role="tablist" aria-label="Task">
+      <button class="task-tab is-active" role="tab" data-advtask="towel">Towel Folding</button>
+      <button class="task-tab" role="tab" data-advtask="chips">Chip Checkout</button>
+      <button class="task-tab" role="tab" data-advtask="cola">Cola Restocking</button>
+      <button class="task-tab" role="tab" data-advtask="pnp">Pick-and-Place</button>
+    </div>
+
+    <div class="adv-grid" id="advGrid"><!-- built by JS --></div>
+  </div>
+</section>
+
+<!-- ============================ DEMOS ============================ -->
+<section class="section section-tint" id="demos">
+  <div class="wrap">
+    <p class="eyebrow">Comparison</p>
+    <h2 class="section-title">STEAM vs. the baselines.</h2>
+
+    <div class="task-tabs" role="tablist" aria-label="Task">
+      <button class="task-tab is-active" role="tab" data-task="towel">Towel Folding</button>
+      <button class="task-tab" role="tab" data-task="chips">Chip Checkout</button>
+      <button class="task-tab" role="tab" data-task="cola">Cola Restocking</button>
+      <button class="task-tab" role="tab" data-task="pnp">Pick-and-Place</button>
+    </div>
+
+    <p class="task-blurb" id="taskBlurb"></p>
+
+    <div class="demo-grid" id="demoGrid"><!-- built by JS --></div>
+  </div>
+</section>
+
+<!-- ============================ RESULTS ============================ -->
+<section class="section" id="results">
+  <div class="wrap">
+    <p class="eyebrow">STEAM performance</p>
+    <h2 class="section-title">Results</h2>
+    <p class="lede">STEAM (trained on expert + non-expert data) against Behavior Cloning, HG-DAgger, and RECAP.</p>
+
+    <h3 class="mini-title results-h">Main results</h3>
+    <div class="chart-card reveal">
+      <div class="chart-toolbar">
+        <div class="toolbar-segs">
+          <div class="seg" role="group" aria-label="Chart view">
+            <button class="seg-btn is-active" data-view="method">By method</button>
+            <button class="seg-btn" data-view="data">By data composition</button>
+          </div>
+          <div class="seg seg-metric" role="group" aria-label="Metric">
+            <button class="metric-btn is-active" data-metric="succ">Success&nbsp;%</button>
+            <button class="metric-btn" data-metric="score">Score</button>
+            <button class="metric-btn" data-metric="thr">Throughput</button>
+          </div>
+        </div>
+      </div>
+      <canvas id="resultChart" width="1040" height="440" role="img" aria-label="Bar chart of policy performance"></canvas>
+      <div class="chart-legend" id="chartLegend"></div>
+      <p class="chart-note" id="chartNote"></p>
+    </div>
+
+    <div class="table-wrap reveal">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th class="left">Method</th>
+            <th colspan="3">Towel Folding</th>
+            <th colspan="3">Chip Checkout</th>
+            <th colspan="3">Cola Restocking</th>
+            <th colspan="3">Pick-and-Place</th>
+          </tr>
+          <tr class="sub">
+            <th class="left"></th>
+            <th>Succ.</th><th>Score</th><th>Thr.</th>
+            <th>Succ.</th><th>Score</th><th>Thr.</th>
+            <th>Succ.</th><th>Score</th><th>Thr.</th>
+            <th>Succ.</th><th>Score</th><th>Thr.</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="left">BC</td>
+            <td>33.3</td><td>3.3</td><td>42</td>
+            <td>39.5</td><td>4.6</td><td>16</td>
+            <td>52.0</td><td>2.36</td><td>71</td>
+            <td>63.8</td><td>1.5</td><td>230</td>
+          </tr>
+          <tr>
+            <td class="left">HG-DAgger</td>
+            <td>40.0</td><td>3.7</td><td>48</td>
+            <td>53.3</td><td>6.0</td><td>22</td>
+            <td>58.3</td><td>2.6</td><td>84</td>
+            <td class="na">&mdash;</td><td class="na">&mdash;</td><td class="na">&mdash;</td>
+          </tr>
+          <tr>
+            <td class="left">RECAP</td>
+            <td>55.6</td><td>2.9</td><td>39</td>
+            <td>53.3</td><td>5.33</td><td>24</td>
+            <td>52.9</td><td>2.1</td><td>46</td>
+            <td>53.8</td><td>1.5</td><td>161</td>
+          </tr>
+          <tr class="steam-row">
+            <td class="left">STEAM</td>
+            <td><b>92.3</b><i class="up">+59</i></td><td><b>4.9</b></td><td><b>58</b></td>
+            <td><b>93.8</b><i class="up">+54.3</i></td><td><b>7.5</b></td><td><b>48</b></td>
+            <td><b>75.0</b><i class="up">+23</i></td><td><b>3.0</b></td><td><b>90</b></td>
+            <td><b>80.0</b><i class="up">+16.2</i></td><td><b>1.8</b></td><td><b>254</b></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="table-cap">Succ. = average success rate (%); Score = average completed sub-stages; Thr. = successful episodes / hour. Green = gain in success rate over the BC baseline. HG-DAgger is not evaluated on pick-and-place, where BC already does reasonably well, so no human corrective demonstrations were collected.</p>
+    </div>
+
+    <div class="ablation reveal">
+      <h3 class="mini-title">Ablations <span class="muted">(towel folding, full data)</span></h3>
+      <p class="abl-intro">Two design choices drive STEAM's gains: <strong>finer-grained temporal classification</strong> and a <strong>conservative ensemble</strong>. Both lift the success rate substantially.</p>
+      <div class="abl-grid">
+        <div class="abl">
+          <h4>Bin count <em>N</em> — granularity helps</h4>
+          <table class="mini-table">
+            <tr><th>N</th><th>Succ.</th><th>Score</th><th>Thr.</th></tr>
+            <tr><td>2</td><td>27.3</td><td>2.8</td><td>41</td></tr>
+            <tr><td>8</td><td>54.6</td><td>3.8</td><td>51</td></tr>
+            <tr class="best"><td>32 <span class="muted">(default)</span></td><td>92.3</td><td>4.9</td><td>58</td></tr>
+          </table>
+          <p class="abl-note">Finer-grained bins sharpen the progress signal: success climbs <strong>27.3 → 54.6 → 92.3%</strong> as <em>N</em> grows from 2 to 32. A coarse <em>N</em>=2 collapses to a mere forward/backward signal and loses most of the gain.</p>
+        </div>
+        <div class="abl">
+          <h4>Ensemble size <em>M</em> — a small ensemble suffices</h4>
+          <table class="mini-table">
+            <tr><th>M</th><th>Succ.</th><th>Score</th><th>Thr.</th></tr>
+            <tr><td>1</td><td>72.7</td><td>3.9</td><td>53</td></tr>
+            <tr class="best"><td>3 <span class="muted">(default)</span></td><td>92.3</td><td>4.9</td><td>58</td></tr>
+            <tr><td>5</td><td>90.9</td><td>4.6</td><td>55</td></tr>
+          </table>
+          <p class="abl-note">The worst-of-<em>M</em> aggregation suppresses overestimated advantages on OOD frames: going from <em>M</em>=1 to 3 lifts success <strong>72.7 → 92.3%</strong>. A small ensemble already captures the benefit — <em>M</em>=5 adds nothing further.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ PAPER / ABSTRACT / BIBTEX ============================ -->
+<section class="section section-tint" id="paper">
+  <div class="wrap narrow">
+    <p class="eyebrow">Abstract</p>
+    <h2 class="section-title">The paper, in one paragraph.</h2>
+    <p class="abstract">
+      Real-world robot learning increasingly relies on heterogeneous data, but demonstrations and rollouts often mix useful progress with stalls, corrections, and suboptimal behavior. Effective policy learning therefore requires frame-level advantages that distinguish reliable local progress from failures and regressions. We propose <strong>Self-supervised Temporal Ensemble Advantage Modeling (STEAM)</strong>, a label-free method that learns such advantages from expert demonstrations. STEAM trains an ensemble of temporal-offset predictors on frame pairs within expert trajectories, using the normalized temporal offset between two frames as a self-supervised signal. Each predictor maps a frame pair to a distribution over temporal offsets, which is converted into a scalar advantage. STEAM then takes the minimum advantage across the ensemble to score mixed-quality rollout data conservatively. Across real-world bimanual towel folding, chip checkout, cola restocking, and single-arm pick-and-place tasks, STEAM identifies stalls, failures, and recoveries. When combined with CFGRL, STEAM further improves policy success rate by 59%, 54.3%, 23% and 16.2% over baselines, respectively.
+    </p>
+
+    <div class="bibtex">
+      <div class="bibtex-head">
+        <span class="eyebrow">BibTeX</span>
+        <button class="copy-btn" id="copyBib">Copy</button>
+      </div>
+<pre id="bibText">@misc{steam2026,
+  title  = {STEAM: Self-Supervised Temporal Ensemble Advantage
+            Modeling for Real-World Robot Learning},
+  author = {Anonymous Authors},
+  year   = {2026},
+  note   = {Under review}
+}</pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ FOOTER ============================ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="brand foot-brand">
+      <img class="brand-logo" src="assets/steam_icon.png" alt="" />
+      <span>STEAM</span>
+    </div>
+    <p class="foot-note">Self-Supervised Temporal Ensemble Advantage Modeling for Real-World Robot Learning.<br/>Project website — anonymized for review.</p>
+  </div>
+</footer>
+
+<!-- ============================ LIGHTBOX ============================ -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-stage">
+    <video id="lbVideo" controls autoplay loop muted playsinline></video>
+    <p class="lb-cap" id="lbCap"></p>
+  </div>
+</div>
+
+<button class="to-top" id="toTop" aria-label="Back to top">&uarr;</button>
+
+<script src="assets/js/main.js?v=28"></script>
+</body>
+</html>

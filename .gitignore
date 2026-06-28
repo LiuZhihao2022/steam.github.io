@@ -1,0 +1,17 @@
+# Large source media — NOT needed by the site (it uses assets/video/ instead)
+# Leading slash = top-level only, so assets/video/ is still tracked.
+/video/
+
+# Local working notes
+/prompt/
+
+# Paper PDF (under review, not linked from the site) — remove this line to publish it
+assets/STEAM_paper.pdf
+
+# OS / editor junk
+.DS_Store
+**/.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
