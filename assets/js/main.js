@@ -330,10 +330,10 @@
     cola: {
       blurb: "Bimanual restocking · place cola cans onto the shelf without knocking others over.",
       clips: [
-        { m: "STEAM (Ours)", f: "cola/steam.mp4", ours: true },
-        { m: "BC", f: "cola/bc.mp4" },
+        { m: "STEAM (Ours)", f: "cola/steam.mp4?v=2", ours: true },
+        { m: "BC", f: "cola/bc.mp4?v=2" },
         { m: "HG-DAgger", f: "cola/dagger.mp4" },
-        { m: "RECAP", f: "cola/recap.mp4" },
+        { m: "RECAP", f: "cola/recap.mp4?v=2" },
       ],
     },
     pnp: {
